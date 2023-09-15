@@ -3,8 +3,8 @@ Monitoring Docker Containers using Docker stats, Prometheus and cAdvisor, Grafan
 
 Pre-requireties :
 
-Docker install
-Docker compose install
+1) Docker install and 
+2) Docker compose install
 
 To configure the Docker daemon as a Prometheus target, you need to specify the metrics-address. The best way to do this is via the daemon.json, which is located at one of the following locations by default. If the file does not exist, create it.
 
