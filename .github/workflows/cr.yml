@@ -1,28 +1,44 @@
-name: Code Review
-
-permissions:
-  contents: read
-  pull-requests: write
+name: ChatGPT automated Code Review
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types:
+      - opened
+      - synchronize
 
 jobs:
-  test:
-    # if: ${{ contains(github.event.*.labels.*.name, 'gpt review') }} # Optional; to run only when a label is attached
+  code_review:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: anc95/ChatGPT-CodeReview@main
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: pip install requests  # Add any other dependencies you need
+
+      - name: SonarQube Analysis
+        run: |
+          # Install SonarScanner (adjust the version as needed)
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+          export PATH="$PWD/sonar-scanner-4.6.2.2472-linux/bin:$PATH"
+
+          # Run SonarScanner
+          sonar-scanner -Dsonar.host.url=${{ secrets.SONARQUBE_URL }} -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }} -Dsonar.projectKey=chatgpt-CodeReview
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # Optional
-          LANGUAGE: Chinese
-          OPENAI_API_ENDPOINT: https://api.openai.com/v1
-          MODEL: gpt-3.5-turbo # https://platform.openai.com/docs/models
-          PROMPT: # example: Please check if there are any confusions or irregularities in the following code diff:
-          top_p: 1 # https://platform.openai.com/docs/api-reference/chat/create#chat/create-top_p
-          temperature: 1 # https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature
-          max_tokens: 10000
-          MAX_PATCH_LENGTH: 10000 # if the patch/diff length is large than MAX_PATCH_LENGTH, will be ignored and won't review. By default, with no MAX_PATCH_LENGTH set, there is also no limit for the patch/diff length.
+          SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+
+      - name: Run ChatGPT-based code review
+        run: python code-review.py
+        env:
+          SONARQUBE_URL: ${{ secrets.SONARQUBE_URL }}
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          CHATGPT_API_URL: ${{ secrets.CHATGPT_API_URL }}
+          CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
