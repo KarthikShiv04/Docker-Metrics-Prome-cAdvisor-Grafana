@@ -6,7 +6,7 @@ SONARQUBE_TOKEN = 'sqa_3b1cb7e9555bcd73a97f9c8b16a52fe6849c5aa9'
 
 # Define your ChatGPT API endpoint and API key
 CHATGPT_API_URL = 'https://api.openai.com/v1/chat/completions'
-CHATGPT_API_KEY = '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'
+CHATGPT_API_KEY = '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'
 
 # Function to fetch SonarQube issues
 def fetch_sonarqube_issues():
