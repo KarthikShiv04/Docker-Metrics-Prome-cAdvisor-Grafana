@@ -1,4 +1,4 @@
-# Docker-Metrics-Prome-cAdvisor-Grafana
+# Docker-Metrics-Prometheus-cAdvisor-Grafana
 Monitoring Docker Containers using Docker stats, Prometheus and cAdvisor, Grafana
 
 Pre-requireties :
